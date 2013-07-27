@@ -190,7 +190,11 @@ class Cobweb
             if response["Content-Encoding"]=="gzip"
               content[:body] = Zlib::GzipReader.new(StringIO.new(response.body)).read
             else
-              content[:body] = response.body
+              if content[:character_set] == "UTF-8"
+                content[:body] = response.body.force_encoding("UTF-8")
+              else
+                content[:body] = response.body
+              end
             end
           else
             content[:body] = Base64.encode64(response.body)
